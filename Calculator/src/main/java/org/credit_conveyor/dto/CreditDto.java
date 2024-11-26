@@ -1,4 +1,4 @@
-package org.example.dto;
+package org.credit_conveyor.dto;
 
 import lombok.Data;
 

@@ -1,8 +1,8 @@
-package org.example.dto;
+package org.credit_conveyor.dto;
 
 import lombok.Data;
-import org.example.enums.EmploymentStatus;
-import org.example.enums.Position;
+import org.credit_conveyor.enums.EmploymentStatus;
+import org.credit_conveyor.enums.Position;
 
 import java.math.BigDecimal;
 @Data
