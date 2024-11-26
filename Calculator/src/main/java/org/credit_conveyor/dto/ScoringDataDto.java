@@ -1,8 +1,8 @@
-package org.example.dto;
+package org.credit_conveyor.dto;
 
 import lombok.Data;
-import org.example.enums.Gender;
-import org.example.enums.MaritalStatus;
+import org.credit_conveyor.enums.Gender;
+import org.credit_conveyor.enums.MaritalStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
