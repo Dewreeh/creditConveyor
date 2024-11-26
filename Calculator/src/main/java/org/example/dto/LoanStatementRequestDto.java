@@ -1,6 +1,7 @@
-package org.credit_conveyor.dto;
+package org.example.dto;
 
 import lombok.Data;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

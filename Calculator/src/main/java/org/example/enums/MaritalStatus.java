@@ -1,4 +1,4 @@
-package org.credit_conveyor.enums;
+package org.example.enums;
 
 public enum MaritalStatus {
     SINGLE,
