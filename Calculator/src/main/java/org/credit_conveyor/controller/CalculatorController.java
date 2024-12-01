@@ -19,8 +19,8 @@ public class CalculatorController {
 
     @PostMapping("/offers")
     List<LoanOfferDto> offers(@RequestBody LoanStatementRequestDto dto){
-        OffersService os = new OffersService();
-        return new ArrayList<>(); //заглушка
+
+        return new OffersService().getOffers(dto);
     }
     @PostMapping("/calc")
     CreditDto calc(@RequestBody ScoringDataDto dto){
