@@ -6,7 +6,8 @@ import java.math.BigDecimal;
 import java.util.UUID;
 @Data
 public class LoanOfferDto {
-    private UUID requestAmount;
+    private UUID statementId;
+    private BigDecimal requestAmount;
     private BigDecimal totalAmount;
     private Integer term;
     private BigDecimal monthlyPayment;
