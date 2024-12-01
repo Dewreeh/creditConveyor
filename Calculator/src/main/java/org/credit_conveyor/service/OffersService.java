@@ -29,6 +29,7 @@ public class OffersService {
                 loanOffers.add(createOffer(loanStatementRequestDto, isInsuranceEnabled, isSalaryClient));
             }
         }
+        
         return loanOffers.stream()
                 .sorted((LoanOfferDto o1, LoanOfferDto o2) -> o2.getRate().subtract(o1.getRate()).intValue())
                 .collect(Collectors.toList());
@@ -42,40 +43,41 @@ public class OffersService {
         UUID uuid = UUID.randomUUID();
 
         BigDecimal requestAmount = loanStatementRequestDto.getAmount(); //получаем сумму запроса из заявки
+        
         Integer requestTerm = loanStatementRequestDto.getTerm(); //получаем срок кредита
 
-        LoanOfferDto loanOfferDto = new LoanOfferDto();
+        LoanOfferDto loanOffer = new LoanOfferDto();
 
         //устанавливаем те значения, которые нам уже известны
-        loanOfferDto.setStatementId(uuid);
+        loanOffer.setStatementId(uuid);
 
-        loanOfferDto.setRequestAmount(requestAmount);
+        loanOffer.setRequestAmount(requestAmount);
 
-        loanOfferDto.setIsInsuranceEnabled(isInsuranceEnabled);
+        loanOffer.setIsInsuranceEnabled(isInsuranceEnabled);
 
-        loanOfferDto.setIsSalaryClient(isSalaryClient);
+        loanOffer.setIsSalaryClient(isSalaryClient);
 
-        loanOfferDto.setTerm(requestTerm);
+        loanOffer.setTerm(requestTerm);
 
         //значения которые зависят от isSalaryClient и isInsuranceEnabled
 
         //сначала ставим базовые значения
-        loanOfferDto.setTotalAmount(requestAmount);
-        loanOfferDto.setRate(baseRate);
+        loanOffer.setTotalAmount(requestAmount);
+        loanOffer.setRate(baseRate);
 
         //изменяем их (или не изменяем) в зависимости от условий
         if(isInsuranceEnabled){
-            loanOfferDto.setTotalAmount(requestAmount.add(insuranceCost)); //добавляем в тело стоимость страховки
-            loanOfferDto.setRate(baseRate.subtract(BigDecimal.valueOf(3))); //вычитаем из ставки 3%
+            loanOffer.setTotalAmount(requestAmount.add(insuranceCost)); //добавляем в тело стоимость страховки
+            loanOffer.setRate(baseRate.subtract(BigDecimal.valueOf(3))); //вычитаем из ставки 3%
         }
         if(isSalaryClient){
-            BigDecimal currentRate = loanOfferDto.getRate(); //получаем значение которое лежит после предыдущего условия (там либо baseRate, либо baseRate-3)
-            loanOfferDto.setRate(currentRate.subtract(BigDecimal.valueOf(1))); //вычитаем из него 1
+            BigDecimal currentRate = loanOffer.getRate(); //получаем значение которое лежит после предыдущего условия (там либо baseRate, либо baseRate-3)
+            loanOffer.setRate(currentRate.subtract(BigDecimal.valueOf(1))); //вычитаем из него 1
         }
 
-        calculateMonthlyPayment(loanOfferDto, requestTerm);
+        calculateMonthlyPayment(loanOffer, requestTerm);
 
-        return loanOfferDto;
+        return loanOffer;
     }
 
     private void calculateMonthlyPayment(LoanOfferDto loanOfferDto, Integer requestTerm){
