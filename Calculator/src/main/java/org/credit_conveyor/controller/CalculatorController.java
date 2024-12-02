@@ -4,6 +4,7 @@ import org.credit_conveyor.dto.CreditDto;
 import org.credit_conveyor.dto.LoanOfferDto;
 import org.credit_conveyor.dto.LoanStatementRequestDto;
 import org.credit_conveyor.dto.ScoringDataDto;
+import org.credit_conveyor.service.CalcService;
 import org.credit_conveyor.service.OffersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +20,20 @@ import java.util.List;
 public class CalculatorController {
     @Autowired
     private OffersService offersService;
+    @Autowired
+    private CalcService calcService;
     @PostMapping("/offers")
-     ResponseEntity<?> offers(@RequestBody LoanStatementRequestDto dto){
+     ResponseEntity<Object> offers(@RequestBody LoanStatementRequestDto dto){
         if(!offersService.isValid(dto)){
             return ResponseEntity.unprocessableEntity().body("Данные не прошли прескоринг. Пожалуйста, перепроверьте их и отправьте новый запрос");
         }
         return ResponseEntity.ok().body(offersService.getOffers(dto));
     }
     @PostMapping("/calc")
-    CreditDto calc(@RequestBody ScoringDataDto dto){
-        return null; //заглушка
+    ResponseEntity<Object> calc(@RequestBody ScoringDataDto dto){
+        if(!calcService.isScoringDataOk(dto)){
+            return ResponseEntity.unprocessableEntity().body("Отказ");
+        }
+        return ResponseEntity.ok().body(calcService.getCredit(dto));
     }
 }

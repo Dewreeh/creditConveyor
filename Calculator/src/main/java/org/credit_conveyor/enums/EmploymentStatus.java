@@ -2,5 +2,7 @@ package org.credit_conveyor.enums;
 
 public enum EmploymentStatus {
     EMPLOYED,
-    UNEMPLOYED
+    UNEMPLOYED,
+    SELF_EMPLOYED,
+    OWNER
 }
