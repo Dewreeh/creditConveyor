@@ -4,11 +4,16 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+
 @Data
 public class CreditDto {
-    private LocalDate date;
-    private BigDecimal principalPayment;
-    private BigDecimal interestPayment;
-    private BigDecimal totalPayment;
-    private BigDecimal remainingDebt;
+    private BigDecimal amount;
+    private Integer term;
+    private BigDecimal monthlyPayment;
+    private BigDecimal rate;
+    private BigDecimal psk;
+    private Boolean isInsuranceEnabled;
+    private Boolean isSalaryClient;
+    private List<PaymentScheduleElementDto> paymentSchedule;
 }
