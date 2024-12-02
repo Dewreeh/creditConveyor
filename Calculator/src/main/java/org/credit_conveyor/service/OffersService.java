@@ -23,10 +23,11 @@ public class OffersService {
 
         List<LoanOfferDto> loanOffers = new ArrayList<>();
 
+        UUID uuid = UUID.randomUUID(); //генерируем общий uuid для будущих офферов
         //Перебираем все комбинации полей isInsuranceEnabled и isSalaryClient
         for(Boolean isInsuranceEnabled: Arrays.asList(true, false)){
             for(Boolean isSalaryClient: Arrays.asList(true, false)){
-                loanOffers.add(createOffer(loanStatementRequestDto, isInsuranceEnabled, isSalaryClient));
+                loanOffers.add(createOffer(loanStatementRequestDto, isInsuranceEnabled, isSalaryClient, uuid));
             }
         }
         
@@ -38,9 +39,9 @@ public class OffersService {
 
     private LoanOfferDto createOffer(LoanStatementRequestDto loanStatementRequestDto,
                                      Boolean isInsuranceEnabled,
-                                     Boolean isSalaryClient){
+                                     Boolean isSalaryClient,
+                                     UUID uuid){
 
-        UUID uuid = UUID.randomUUID();
 
         BigDecimal requestAmount = loanStatementRequestDto.getAmount(); //получаем сумму запроса из заявки
         
