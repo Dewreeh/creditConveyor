@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,7 @@ public class OffersService {
         }
         
         return loanOffers.stream()
-                .sorted((LoanOfferDto o1, LoanOfferDto o2) -> o2.getRate().subtract(o1.getRate()).intValue())
+                .sorted( (LoanOfferDto o1, LoanOfferDto o2) -> o2.getRate().subtract(o1.getRate()).intValue())
                 .collect(Collectors.toList());
     }
 
@@ -68,11 +69,11 @@ public class OffersService {
         //изменяем их (или не изменяем) в зависимости от условий
         if(isInsuranceEnabled){
             loanOffer.setTotalAmount(requestAmount.add(insuranceCost)); //добавляем в тело стоимость страховки
-            loanOffer.setRate(baseRate.subtract(BigDecimal.valueOf(3))); //вычитаем из ставки 3%
+            loanOffer.setRate(baseRate.subtract(new BigDecimal(3))); //вычитаем из ставки 3%
         }
         if(isSalaryClient){
             BigDecimal currentRate = loanOffer.getRate(); //получаем значение которое лежит после предыдущего условия (там либо baseRate, либо baseRate-3)
-            loanOffer.setRate(currentRate.subtract(BigDecimal.valueOf(1))); //вычитаем из него 1
+            loanOffer.setRate(currentRate.subtract(new BigDecimal(1))); //вычитаем из него 1
         }
 
         calculateMonthlyPayment(loanOffer, requestTerm);
@@ -81,9 +82,45 @@ public class OffersService {
     }
 
     private void calculateMonthlyPayment(LoanOfferDto loanOfferDto, Integer requestTerm){
-        BigDecimal monthlyPayment = loanOfferDto.getTotalAmount().divide(BigDecimal.valueOf(requestTerm), 2,  RoundingMode.HALF_UP);
+        BigDecimal monthlyPayment = loanOfferDto.getTotalAmount().divide(new BigDecimal(requestTerm), 2,  RoundingMode.HALF_UP);
         loanOfferDto.setMonthlyPayment(monthlyPayment);
 
+    }
+
+    public Boolean isValid(LoanStatementRequestDto dto){
+        boolean isValid = true;
+
+        if(dto.getFirstName() == null || dto.getFirstName().length() < 2 || dto.getFirstName().length() > 30){
+            isValid = false;
+        }
+        if(dto.getLastName() == null || dto.getLastName().length() < 2 || dto.getLastName().length() > 30){
+            isValid = false;
+        }
+        if(dto.getMiddleName() == null || dto.getMiddleName().length() < 2 || dto.getMiddleName().length() > 30){
+            isValid = false;
+        }
+        if(dto.getAmount() == null || dto.getAmount().compareTo(new BigDecimal("20000")) < 0){
+            isValid = false;
+        }
+        if(dto.getTerm() == null || dto.getTerm() < 6){
+            isValid = false;
+        }
+        if (dto.getEmail() == null || !dto.getEmail().matches("^[a-z0-9A-Z_!#$%&'*+/=?`{|}~^.-]+@[a-z0-9A-Z.-]+$")){
+            isValid = false;
+        }
+
+        if(dto.getPassportSeries() == null || !dto.getPassportSeries().matches("\\d{4}")){
+            isValid = false;
+        }
+        if(dto.getPassportNumber() == null || !dto.getPassportNumber().matches("\\d{6}")){
+            isValid = false;
+        }
+
+        LocalDate minDate = LocalDate.now().minusYears(18);
+        if(dto.getBirthdate() == null || minDate.isBefore(dto.getBirthdate())){
+            isValid = false;
+        }
+        return isValid;
     }
 
 
