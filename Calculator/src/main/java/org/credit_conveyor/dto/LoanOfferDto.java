@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 @Data
 public class LoanOfferDto {
+    //сюда не добавляю аннотации @notNull, потому что проверяю это в прескоринге
     private UUID statementId;
     private BigDecimal requestAmount;
     private BigDecimal totalAmount;
