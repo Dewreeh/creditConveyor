@@ -1,6 +1,8 @@
 package org.credit_conveyor.service;
 
 
+import lombok.Getter;
+import lombok.Setter;
 import org.credit_conveyor.dto.LoanOfferDto;
 import org.credit_conveyor.dto.LoanStatementRequestDto;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,10 +16,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class OffersService {
-    @Value("${application.baseRate}")
+    @Value("${application.baseRate}") @Getter @Setter //геттер и сеттер для тестов
     private BigDecimal baseRate;
 
-    @Value("${application.insuranceCost}") //решил захардкодить стоимость страховки по аналогии со ставкой (про которую написано в задании)
+    @Value("${application.insuranceCost}") @Getter @Setter //решил захардкодить стоимость страховки по аналогии со ставкой (про которую написано в задании)
     private BigDecimal insuranceCost;
 
     public List<LoanOfferDto> getOffers(LoanStatementRequestDto loanStatementRequestDto){
@@ -123,6 +125,7 @@ public class OffersService {
         }
         return isValid;
     }
+
 
 
 }

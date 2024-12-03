@@ -1,5 +1,7 @@
 package org.credit_conveyor.service;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.credit_conveyor.dto.CreditDto;
 import org.credit_conveyor.dto.PaymentScheduleElementDto;
 import org.credit_conveyor.dto.ScoringDataDto;
@@ -20,10 +22,10 @@ import static org.credit_conveyor.enums.EmploymentStatus.OWNER;
 
 @Service
 public class CalcService {
-    @Value("${application.baseRate}")
+    @Value("${application.baseRate}") @Getter @Setter //геттер и сеттер для тестов
     private BigDecimal baseRate;
 
-    @Value("${application.insuranceCost}")
+    @Value("${application.insuranceCost}") @Getter @Setter //геттер и сеттер для тестов
     private BigDecimal insuranceCost;
     CreditDto credit = new CreditDto();
     public CreditDto getCredit(ScoringDataDto scoringDataDto){
