@@ -4,7 +4,6 @@ public enum Position {
     DIRECTOR,
     DEVELOPER,
     MANAGER,
-    HR,
-    ANALYST,
-    SALER
+    TOP_MANAGER,
+    HR
 }
