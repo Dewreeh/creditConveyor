@@ -143,7 +143,7 @@ public class CalcService {
     }
 
     //считаем ежемесячную выплату
-    private BigDecimal calculateMonthlyPayment(ScoringDataDto dto, BigDecimal rate, BigDecimal insuranceAmount){
+    private BigDecimal calculateMonthlyPayment(ScoringDataDto dto, BigDecimal rate, BigDecimal amountWithInsurance){
 
         int term = dto.getTerm();
         BigDecimal monthlyRate = rate.divide(BigDecimal.valueOf(1200), 10, RoundingMode.HALF_UP); //ставка за месяц (ставка поделенная на 12 и на 100)
@@ -158,7 +158,7 @@ public class CalcService {
         BigDecimal annuityFactor = numerator.divide(denominator, 10, RoundingMode.HALF_UP);
 
         // ежемесячный платёж
-        return insuranceAmount.multiply(annuityFactor).setScale(2, RoundingMode.HALF_UP);
+        return amountWithInsurance.multiply(annuityFactor).setScale(2, RoundingMode.HALF_UP);
 
     }
 
