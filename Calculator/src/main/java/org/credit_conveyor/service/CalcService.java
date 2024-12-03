@@ -42,6 +42,7 @@ public class CalcService {
         credit.setTerm(scoringDataDto.getTerm());
         credit.setMonthlyPayment(calculateMonthlyPayment(scoringDataDto, credit.getRate(), credit.getAmount()));
         credit.setPsk(calculatePsk(scoringDataDto,credit.getRate(), credit.getAmount()));
+        credit.setPaymentSchedule(getPaymentSchedule(scoringDataDto, credit));
 
 
         return credit;
@@ -161,12 +162,30 @@ public class CalcService {
 
     private List<PaymentScheduleElementDto> getPaymentSchedule(ScoringDataDto scoringDataDto, CreditDto creditDto){
         List<PaymentScheduleElementDto> schedule = new ArrayList<>();
-        PaymentScheduleElementDto scheduleElement = new PaymentScheduleElementDto();
-        LocalDate firstPaymentDate = LocalDate.now().plusMonths(1);
-        for(int number = 1; number <= scoringDataDto.getTerm(); number++){
-            scheduleElement.setNumber(number);
-            scheduleElement.setDate(firstPaymentDate.plusMonths(1));
 
+
+        LocalDate firstPaymentDate = LocalDate.now().plusMonths(1);
+
+        BigDecimal monthlyPayment = calculateMonthlyPayment(scoringDataDto, creditDto.getRate(), creditDto.getAmount());
+        BigDecimal remainingDebt = scoringDataDto.getAmount(); //начальный долг
+
+        for(int number = 1; number <= scoringDataDto.getTerm(); number++){
+            PaymentScheduleElementDto scheduleElement = new PaymentScheduleElementDto();
+            scheduleElement.setNumber(number);
+            scheduleElement.setDate(firstPaymentDate.plusMonths(number - 1));
+
+            BigDecimal interestPayment = remainingDebt.multiply(creditDto.getRate().divide(BigDecimal.valueOf(1200), 10, RoundingMode.HALF_UP))
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            BigDecimal debtPayment = monthlyPayment.subtract(interestPayment);
+
+            remainingDebt = remainingDebt.subtract(debtPayment).max(BigDecimal.valueOf(0));
+
+            scheduleElement.setTotalPayment(monthlyPayment);
+            scheduleElement.setInterestPayment(interestPayment);
+            scheduleElement.setDebtPayment(debtPayment);
+            scheduleElement.setRemainingDebt(remainingDebt);
+            schedule.add(scheduleElement);
         }
         return schedule;
     }
