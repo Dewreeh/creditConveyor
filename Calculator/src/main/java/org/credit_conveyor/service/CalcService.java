@@ -25,20 +25,23 @@ public class CalcService {
 
     @Value("${application.insuranceCost}")
     private BigDecimal insuranceCost;
-
+    CreditDto credit = new CreditDto();
     public CreditDto getCredit(ScoringDataDto scoringDataDto){
         CreditDto credit = new CreditDto();
 
         credit.setIsSalaryClient(scoringDataDto.getIsSalaryClient());
         credit.setIsInsuranceEnabled(scoringDataDto.getIsInsuranceEnabled());
-        credit.setAmount(scoringDataDto.getAmount());
+
+        //если страховка включена, добавляем её в тело кредита
+        if (scoringDataDto.getIsInsuranceEnabled() != null && scoringDataDto.getIsInsuranceEnabled()) {
+            credit.setAmount(scoringDataDto.getAmount().add(insuranceCost));
+        } else{
+            credit.setAmount(scoringDataDto.getAmount());
+        }
         credit.setRate(calculateRate(scoringDataDto));
         credit.setTerm(scoringDataDto.getTerm());
-        credit.setMonthlyPayment(calculateMonthlyPayment(scoringDataDto, credit.getRate()));
-        credit.setPsk(calculatePsk(scoringDataDto,credit.getRate()));
-
-
-
+        credit.setMonthlyPayment(calculateMonthlyPayment(scoringDataDto, credit.getRate(), credit.getAmount()));
+        credit.setPsk(calculatePsk(scoringDataDto,credit.getRate(), credit.getAmount()));
 
 
         return credit;
@@ -50,7 +53,7 @@ public class CalcService {
         if(dto.getEmployment().getEmploymentStatus() == EmploymentStatus.UNEMPLOYED){
             isOk = false;
         }
-        if(dto.getEmployment().getSalary().multiply(new BigDecimal(24)).compareTo(dto.getAmount()) > 0){
+        if(dto.getEmployment().getSalary().multiply(new BigDecimal(24)).compareTo(dto.getAmount()) < 0){
             isOk = false;
         }
         if(dto.getEmployment().getWorkExperienceTotal() < 18 || dto.getEmployment().getWorkExperienceCurrent() < 3){
@@ -116,37 +119,43 @@ public class CalcService {
         return finalRate;
     }
 
-    private BigDecimal calculatePsk(ScoringDataDto dto, BigDecimal rate){
-        BigDecimal monthlyPayment = calculateMonthlyPayment(dto, rate);
-        //общая сумма выплат без страховки
+    private BigDecimal calculatePsk(ScoringDataDto dto, BigDecimal rate, BigDecimal insuranceAmount) {
+        // Получаем ежемесячный платеж
+        BigDecimal monthlyPayment = calculateMonthlyPayment(dto, rate, insuranceAmount);
+
+        // Общая сумма выплат без страховки
         BigDecimal totalToPay = monthlyPayment.multiply(BigDecimal.valueOf(dto.getTerm()));
 
-        if(dto.getIsInsuranceEnabled() != null && dto.getIsInsuranceEnabled()){
-            totalToPay = totalToPay.add(insuranceCost);
-        }
+        //по формуле отсюда https://www.raiffeisen.ru/wiki/chto-takoe-polnaya-stoimost-kredita/
         BigDecimal psk = totalToPay.divide(dto.getAmount(), 10, RoundingMode.HALF_UP)
                 .subtract(BigDecimal.ONE)
-                .multiply(BigDecimal.valueOf(12))
-                .divide(BigDecimal.valueOf(dto.getTerm()), 10, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100))
+                .divide(BigDecimal.valueOf(dto.getTerm()), 10, RoundingMode.HALF_UP);
+
+        BigDecimal effectivePsk = BigDecimal.ONE.add(psk.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP))
+                .pow(12)
+                .subtract(BigDecimal.ONE)
                 .multiply(BigDecimal.valueOf(100));
-
-        return psk;
+        return effectivePsk.setScale(2, RoundingMode.HALF_UP);
     }
-    private BigDecimal calculateMonthlyPayment(ScoringDataDto dto, BigDecimal rate){
-        BigDecimal amount = dto.getAmount();
+
+    //считаем ежемесячную выплату
+    private BigDecimal calculateMonthlyPayment(ScoringDataDto dto, BigDecimal rate, BigDecimal insuranceAmount){
+
         int term = dto.getTerm();
-        BigDecimal monthlyRate = rate.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP); //ставка за месяц
+        BigDecimal monthlyRate = rate.divide(BigDecimal.valueOf(1200), 10, RoundingMode.HALF_UP); //ставка за месяц (ставка поделенная на 12 и на 100)
 
-        //Числитель для формулы месячного платежа
-        BigDecimal numerator = monthlyRate.multiply(BigDecimal.valueOf(1).add(monthlyRate)).pow(term);
+        // Числитель
+        BigDecimal numerator = monthlyRate.multiply(BigDecimal.ONE.add(monthlyRate).pow(term));
 
-        //Знаменатель
-        BigDecimal denominator = (BigDecimal.valueOf(1).add(monthlyRate)).pow(term).subtract(BigDecimal.valueOf(1));
+        // Знаменатель
+        BigDecimal denominator = BigDecimal.ONE.add(monthlyRate).pow(term).subtract(BigDecimal.ONE);
 
-        //Делим числитель на знаменатель
-        BigDecimal annuityFactor = numerator.divide(denominator, 2, RoundingMode.HALF_UP);
+        // Аннуитетный коэффициент
+        BigDecimal annuityFactor = numerator.divide(denominator, 10, RoundingMode.HALF_UP);
 
-        return amount.multiply(annuityFactor);
+        // ежемесячный платёж
+        return insuranceAmount.multiply(annuityFactor).setScale(2, RoundingMode.HALF_UP);
 
     }
 
@@ -157,6 +166,7 @@ public class CalcService {
         for(int number = 1; number <= scoringDataDto.getTerm(); number++){
             scheduleElement.setNumber(number);
             scheduleElement.setDate(firstPaymentDate.plusMonths(1));
+
         }
         return schedule;
     }
