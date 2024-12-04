@@ -85,7 +85,23 @@ public class OffersService {
     }
 
     private void calculateMonthlyPayment(LoanOfferDto loanOfferDto, Integer requestTerm){
-        BigDecimal monthlyPayment = loanOfferDto.getTotalAmount().divide(new BigDecimal(requestTerm), 2,  RoundingMode.HALF_UP);
+        int term = loanOfferDto.getTerm();
+        BigDecimal rate = loanOfferDto.getRate();
+        BigDecimal amount = loanOfferDto.getTotalAmount();
+
+        BigDecimal monthlyRate = rate.divide(BigDecimal.valueOf(1200), 10, RoundingMode.HALF_UP); //ставка за месяц (ставка поделенная на 12 и на 100)
+
+        // Числитель
+        BigDecimal numerator = monthlyRate.multiply(BigDecimal.ONE.add(monthlyRate).pow(term));
+
+        // Знаменатель
+        BigDecimal denominator = BigDecimal.ONE.add(monthlyRate).pow(term).subtract(BigDecimal.ONE);
+
+        // Аннуитетный коэффициент
+        BigDecimal annuityFactor = numerator.divide(denominator, 10, RoundingMode.HALF_UP);
+
+        // ежемесячный платёж
+        BigDecimal monthlyPayment = amount.multiply(annuityFactor).setScale(2, RoundingMode.HALF_UP);
         loanOfferDto.setMonthlyPayment(monthlyPayment);
 
     }
