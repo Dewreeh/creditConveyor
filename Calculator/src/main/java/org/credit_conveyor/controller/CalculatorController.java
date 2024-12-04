@@ -82,7 +82,7 @@ public class CalculatorController {
             return ResponseEntity.unprocessableEntity().body("Отказ");
         }
         CreditDto credit = calcService.getCredit(dto);
-        log.info("Входные данные по API /calc: {}", credit);
+        log.info("Выходные данные по API /calc: {}", credit);
         return ResponseEntity.ok(credit);
     }
 
