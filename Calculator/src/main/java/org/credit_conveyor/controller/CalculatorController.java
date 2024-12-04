@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.credit_conveyor.dto.CreditDto;
 import org.credit_conveyor.dto.LoanOfferDto;
 import org.credit_conveyor.dto.LoanStatementRequestDto;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+
+@Slf4j
 @RestController
 @RequestMapping("/calculator")
 public class CalculatorController {
@@ -46,10 +49,14 @@ public class CalculatorController {
     )
 
      ResponseEntity<Object> offers(@RequestBody LoanStatementRequestDto dto){
+        log.info("Запрос на на API /offers, входные данные: {}", dto);
         if(!offersService.isValid(dto)){
+            log.warn("Прескоринг не пройден на /offers: {}", dto);
             return ResponseEntity.unprocessableEntity().body("Данные не прошли прескоринг. Пожалуйста, перепроверьте их и отправьте новый запрос");
         }
-        return ResponseEntity.ok().body(offersService.getOffers(dto));
+        List<LoanOfferDto> offers = offersService.getOffers(dto);
+        log.info("Выходные данные по API /offers: {}", offers);
+        return ResponseEntity.ok(offers);
     }
 
     @PostMapping("/calc")
@@ -69,10 +76,14 @@ public class CalculatorController {
     )
 
     ResponseEntity<Object> calc(@RequestBody ScoringDataDto dto){
+        log.info("Запрос на API /calc, входные данные {}", dto);
         if(!calcService.isScoringDataOk(dto)){
+            log.warn("Скоринг не пройден на API /calc: {}", dto);
             return ResponseEntity.unprocessableEntity().body("Отказ");
         }
-        return ResponseEntity.ok().body(calcService.getCredit(dto));
+        CreditDto credit = calcService.getCredit(dto);
+        log.info("Входные данные по API /calc: {}", credit);
+        return ResponseEntity.ok(credit);
     }
 
 }
