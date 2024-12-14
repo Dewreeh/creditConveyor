@@ -14,6 +14,7 @@ public class DealController {
 
     @PostMapping("/statement")
     ResponseEntity<Object> getOffers(@Valid @RequestBody LoanStatementRequestDto dto){
+
         return ResponseEntity.ok(new LoanOfferDto()); //заглушка
     }
 
