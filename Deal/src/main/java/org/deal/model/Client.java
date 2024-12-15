@@ -31,11 +31,11 @@ public class Client {
     private Integer dependentAmount;
 
     @ManyToOne
-    @JoinColumn(name = "passportUuid", referencedColumnName = "passportUuid")
+    @JoinColumn(name = "passportId", referencedColumnName = "passportUuid")
     private Passport passport;
 
     @ManyToOne
-    @JoinColumn(name = "employmentUuid", referencedColumnName = "employmentUuid")
+    @JoinColumn(name = "employmentId", referencedColumnName = "employmentUuid")
     private Employment employment;
 
     private String accountNumber;
