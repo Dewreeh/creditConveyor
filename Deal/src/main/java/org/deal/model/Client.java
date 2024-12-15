@@ -1,6 +1,7 @@
 package org.deal.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.deal.enums.Gender;
 import org.deal.enums.MaritalStatus;
 import org.springframework.cglib.core.Local;
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
+@Data
 @Table(name="client")
 public class Client {
     @Id

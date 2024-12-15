@@ -1,12 +1,14 @@
 package org.deal.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.deal.dto.PaymentScheduleElementDto;
 import org.deal.enums.CreditStatus;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 @Entity
+@Data
 @Table(name = "credit")
 public class Credit {
         @Id
