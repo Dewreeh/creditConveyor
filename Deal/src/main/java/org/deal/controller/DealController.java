@@ -8,12 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClient;
 
 @RestController("/deal")
 public class DealController {
 
     @PostMapping("/statement")
     ResponseEntity<Object> getOffers(@Valid @RequestBody LoanStatementRequestDto dto){
+
         return ResponseEntity.ok(new LoanOfferDto()); //заглушка
     }
 
