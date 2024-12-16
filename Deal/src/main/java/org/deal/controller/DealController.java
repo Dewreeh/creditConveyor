@@ -5,6 +5,7 @@ import org.deal.dto.FinishRegistrationRequestDto;
 import org.deal.dto.LoanOfferDto;
 import org.deal.dto.LoanStatementRequestDto;
 import org.deal.model.Client;
+import org.deal.service.SelectService;
 import org.deal.service.StatementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,10 +24,12 @@ import java.util.UUID;
 @RequestMapping("/deal")
 public class DealController {
     private final StatementService statementService;
+    private final SelectService selectService;
 
     @Autowired
-    public DealController(StatementService statementService) {
+    public DealController(StatementService statementService, SelectService selectService) {
         this.statementService = statementService;
+        this.selectService = selectService;
     }
 
     @PostMapping("/statement")
@@ -48,7 +51,7 @@ public class DealController {
     }
     @PostMapping("/offer/select")
     ResponseEntity<Object> selectOffer(@Valid @RequestBody LoanOfferDto dto){
-
+        selectService.applyOffer(dto);
         return ResponseEntity.ok("Успех"); //заглушка
     }
     @PostMapping("/offer/calculate")

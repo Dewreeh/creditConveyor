@@ -2,6 +2,9 @@ package org.deal.service;
 
 import org.deal.dto.LoanOfferDto;
 import org.deal.dto.LoanStatementRequestDto;
+import org.deal.dto.StatementStatusHistoryDto;
+import org.deal.enums.ApplicationStatus;
+import org.deal.enums.ChangeType;
 import org.deal.model.Client;
 import org.deal.model.Statement;
 import org.deal.repository.ClientRepository;
@@ -15,10 +18,13 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 import javax.swing.plaf.nimbus.State;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,9 +57,6 @@ public class StatementService {
         }
     }
 
-
-
-
     public Client saveClient(LoanStatementRequestDto dto){
         Client client = createClientEntity(dto);
         try {
@@ -66,11 +69,19 @@ public class StatementService {
         return client;
     }
 
-    public UUID saveStatement(Client client){
+    public UUID saveStatement(Client client) {
         Statement statement = new Statement();
         UUID uuid = UUID.randomUUID();
         statement.setStatementId(uuid);
         statement.setClient(client);
+        statement.setStatus(ApplicationStatus.DOCUMENT_CREATED);
+        statement.setCreationDate(LocalDateTime.now());
+
+        // Создаем объект статуса для истории
+        StatementStatusHistoryDto statusHistoryDto = createStatusHistory(ApplicationStatus.DOCUMENT_CREATED, ChangeType.AUTOMATIC);
+
+        // Добавляем статус в историю
+        statement.setStatusHistory(List.of(statusHistoryDto));  // История статусов на момент создания заявки
 
         LoanOfferDto loanOfferDto = new LoanOfferDto();
         loanOfferDto.setStatementId(null);
@@ -83,6 +94,8 @@ public class StatementService {
         loanOfferDto.setIsSalaryClient(null);
 
         statement.setAppliedOffer(loanOfferDto);
+
+        // Сохраняем заявку
         statementRepository.save(statement);
         return uuid;
     }
@@ -106,6 +119,13 @@ public class StatementService {
         client.setLastName(dto.getLastName());
         client.setMiddleName(dto.getMiddleName());
         return client;
+    }
+    private StatementStatusHistoryDto createStatusHistory(ApplicationStatus status, ChangeType changeType) {
+        StatementStatusHistoryDto statusHistoryDto = new StatementStatusHistoryDto();
+        statusHistoryDto.setStatus(String.valueOf(status));
+        statusHistoryDto.setTime(new Date());
+        statusHistoryDto.setChangeType(changeType);
+        return statusHistoryDto;
     }
 
 
