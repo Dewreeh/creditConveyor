@@ -3,9 +3,13 @@ package org.deal.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.deal.dto.LoanOfferDto;
+import org.deal.dto.StatementStatusHistoryDto;
+import org.deal.enums.ApplicationStatus;
 import org.deal.repository.LoanOfferAttributeConverter;
+import org.deal.repository.StatusHistoryConverter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -23,7 +27,9 @@ public class Statement {
     @JoinColumn(name = "creditId",  referencedColumnName = "creditId")
     private Credit credit;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private ApplicationStatus status;
 
     private LocalDateTime creationDate;
 
@@ -35,5 +41,7 @@ public class Statement {
 
     private UUID sesCode;
 
-    private String statusHistory;
+    @Convert(converter = StatusHistoryConverter.class)
+    @Column(name = "status_history", columnDefinition = "jsonb", nullable = false)
+    private List<StatementStatusHistoryDto> statusHistory;
 }
