@@ -51,8 +51,12 @@ public class DealController {
     }
     @PostMapping("/offer/select")
     ResponseEntity<Object> selectOffer(@Valid @RequestBody LoanOfferDto dto){
-        selectService.applyOffer(dto);
-        return ResponseEntity.ok("Успех"); //заглушка
+        try {
+            selectService.applyOffer(dto);
+        } catch (ResponseStatusException e){
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        }
+        return ResponseEntity.ok("Успех");
     }
     @PostMapping("/offer/calculate")
     ResponseEntity<Object> calculate(@Valid @RequestBody FinishRegistrationRequestDto dto){
