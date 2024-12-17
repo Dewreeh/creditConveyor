@@ -7,8 +7,11 @@ import org.deal.enums.ChangeType;
 import org.deal.model.Statement;
 import org.deal.repository.StatementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -51,15 +54,20 @@ public class SelectService {
 
     private StatementStatusHistoryDto createStatusHistory(ApplicationStatus status, ChangeType changeType) {
         StatementStatusHistoryDto statusHistoryDto = new StatementStatusHistoryDto();
-        statusHistoryDto.setStatus(status.name());  // Статус в виде строки
-        statusHistoryDto.setTime(new Date());  // Текущее время
-        statusHistoryDto.setChangeType(changeType);  // Тип изменения
+        statusHistoryDto.setStatus(status.name());
+        statusHistoryDto.setTime(new Date());
+        statusHistoryDto.setChangeType(changeType);
         return statusHistoryDto;
     }
 
     private Statement getStatement(UUID statementUuid){
-        return statementRepository.getByStatementId(statementUuid);
+        Statement statement = statementRepository.getByStatementId(statementUuid);
+        if (statement == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Заявка с таким ID не найдена");
+        }
+        return statement;
     }
-
-
 }
+
+
+
