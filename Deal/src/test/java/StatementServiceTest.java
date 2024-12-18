@@ -116,22 +116,12 @@ class StatementServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    private LoanStatementRequestDto createValidLoanStatementRequestDto() {
-        LoanStatementRequestDto dto = new LoanStatementRequestDto();
-        dto.setFirstName("John");
-        dto.setLastName("Doe");
-        dto.setEmail("john.doe@example.com");
-        dto.setBirthdate(LocalDate.from(LocalDateTime.now().minusYears(30)));
-        dto.setPassportNumber("123456");
-        dto.setPassportSeries("AB");
-        return dto;
-    }
 
     private Client createValidClient() {
         Client client = new Client();
         client.setClientId(UUID.randomUUID());
-        client.setFirstName("John");
-        client.setLastName("Doe");
+        client.setFirstName("Valera");
+        client.setLastName("Valera");
         return client;
     }
 }
