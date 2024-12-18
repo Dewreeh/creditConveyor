@@ -31,7 +31,7 @@ public class FinishRegistartionService {
 
     private final CreditRepository creditRepository;
     private final StatementRepository statementRepository;
-    private final StatementService statementService;
+
 
     @Autowired
     public FinishRegistartionService(StatementService statementService,
@@ -39,7 +39,6 @@ public class FinishRegistartionService {
                                      StatementRepository statementRepository) {
         this.creditRepository = creditRepository;
         this.statementRepository = statementRepository;
-        this.statementService = statementService;
 
     }
     @Transactional

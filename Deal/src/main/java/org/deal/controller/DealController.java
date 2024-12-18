@@ -6,6 +6,7 @@ import org.deal.dto.LoanOfferDto;
 import org.deal.dto.LoanStatementRequestDto;
 import org.deal.dto.ScoringDataDto;
 import org.deal.model.Client;
+import org.deal.service.ClientService;
 import org.deal.service.FinishRegistartionService;
 import org.deal.service.SelectService;
 import org.deal.service.StatementService;
@@ -24,16 +25,19 @@ import java.util.UUID;
 public class DealController {
     private final StatementService statementService;
     private final SelectService selectService;
+    private final ClientService clientService;
     private final FinishRegistartionService finishRegistartionService;
 
     @Autowired
     public DealController(StatementService statementService,
                           SelectService selectService,
-                          FinishRegistartionService finishRegistartionService) {
+                          FinishRegistartionService finishRegistartionService,
+                          ClientService clientService) {
 
         this.statementService = statementService;
         this.selectService = selectService;
         this.finishRegistartionService = finishRegistartionService;
+        this.clientService = clientService;
     }
 
     @PostMapping("/statement")
@@ -44,7 +48,7 @@ public class DealController {
         //то остальные операции не выполняются
         //возможно, логика неверная, но в ТЗ это конкретно не прописано
         try {
-            Client client = statementService.saveClient(dto); //сохраняем клиента в бд и получаем его сущность
+            Client client = clientService.saveClient(dto); //сохраняем клиента в бд и получаем его сущность
             UUID statementUuid = statementService.saveStatement(client); //сущность клиента передаём для сохранения заявки
             offers = statementService.getOffers(dto);
             offers = statementService.setUuidForOffers(offers, statementUuid);
