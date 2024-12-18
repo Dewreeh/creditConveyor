@@ -11,20 +11,17 @@ import org.deal.enums.CreditStatus;
 import org.deal.model.Client;
 import org.deal.model.Credit;
 import org.deal.model.Statement;
-import org.deal.repository.ClientRepository;
 import org.deal.repository.CreditRepository;
 import org.deal.repository.StatementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDateTime;
-import java.util.List;
+
 import java.util.UUID;
 @Slf4j
 @Service

@@ -27,12 +27,10 @@ import java.util.UUID;
 public class StatementService {
 
     private final StatementRepository statementRepository;
-    private final ClientService clientService;
 
     @Autowired
     public StatementService(StatementRepository statementRepository, ClientService clientService) {
         this.statementRepository = statementRepository;
-        this.clientService = clientService;
     }
 
     //получаем офферы через МС calculator

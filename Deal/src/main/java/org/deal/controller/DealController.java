@@ -9,17 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.deal.dto.FinishRegistrationRequestDto;
 import org.deal.dto.LoanOfferDto;
 import org.deal.dto.LoanStatementRequestDto;
-import org.deal.dto.ScoringDataDto;
 import org.deal.model.Client;
 import org.deal.service.ClientService;
 import org.deal.service.FinishRegistartionService;
 import org.deal.service.SelectService;
 import org.deal.service.StatementService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
