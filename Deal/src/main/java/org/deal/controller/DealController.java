@@ -43,14 +43,17 @@ public class DealController {
     @PostMapping("/statement")
     ResponseEntity<Object> getOffers(@Valid @RequestBody LoanStatementRequestDto dto) {
         List<LoanOfferDto> offers;
-        //тут всё работает таким образом, что при ошибке в одной операции (например запросе на МС calculator)
-        //или при сохранении сущности (например, уже есть клиент с такой почтой),
-        //то остальные операции не выполняются
-        //возможно, логика неверная, но в ТЗ это конкретно не прописано
         try {
-            Client client = clientService.saveClient(dto); //сохраняем клиента в бд и получаем его сущность
-            UUID statementUuid = statementService.saveStatement(client); //сущность клиента передаём для сохранения заявки
+            // Получаем офферы
             offers = statementService.getOffers(dto);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        }
+
+        try {
+            // Сохраняем клиента если офферы получены (прескоринг прошел)
+            Client client = clientService.saveClient(dto);
+            UUID statementUuid = statementService.saveStatement(client);
             offers = statementService.setUuidForOffers(offers, statementUuid);
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getReason());

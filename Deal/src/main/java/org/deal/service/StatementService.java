@@ -35,7 +35,6 @@ public class StatementService {
         this.clientService = clientService;
     }
 
-    // Получение офферов через МС calculator
     //получаем офферы через МС calculator
     public List<LoanOfferDto> getOffers(LoanStatementRequestDto dto){
         RestClient restClient = RestClient.builder().build();
