@@ -2,14 +2,14 @@ package org.deal.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import org.deal.dto.LoanOfferDto;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.deal.dto.PaymentScheduleElementDto;
 
 //Взято отсюда https://www.baeldung.com/spring-boot-jpa-storing-postgresql-jsonb + Добавлена поддержка LocalDateTime в jackson
 @Converter(autoApply = true)
-public class LoanOfferAttributeConverter implements AttributeConverter<LoanOfferDto, String> {
+public class PaymentScheduleConverter implements AttributeConverter<PaymentScheduleElementDto, String> {
     private static final ObjectMapper objectMapper;
     static {
         objectMapper = new ObjectMapper();
@@ -17,7 +17,7 @@ public class LoanOfferAttributeConverter implements AttributeConverter<LoanOffer
     }
 
     @Override
-    public String convertToDatabaseColumn(LoanOfferDto dto) {
+    public String convertToDatabaseColumn(PaymentScheduleElementDto dto) {
         // Если объект null, возвращаем пустой json, иначе сериализуем в JSON из объетка
         if (dto == null) {
             return "{}";  // Пустой объект JSON вместо null
@@ -30,12 +30,12 @@ public class LoanOfferAttributeConverter implements AttributeConverter<LoanOffer
     }
 
     @Override
-    public LoanOfferDto convertToEntityAttribute(String value) {
+    public PaymentScheduleElementDto convertToEntityAttribute(String value) {
         if (value == null || value.isEmpty() || value.equals("{}")) {
-            return new LoanOfferDto();  // Если значение пустое или пустой объект, возвращаем пустой LoanOfferDto
+            return new PaymentScheduleElementDto();  // Если значение пустое или пустой объект, возвращаем пустой LoanOfferDto
         }
         try {
-            return objectMapper.readValue(value, LoanOfferDto.class);  // Десериализация из JSON в объект
+            return objectMapper.readValue(value, PaymentScheduleElementDto.class);  // Десериализация из JSON в объект
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Ошибка при конвертации JSON в LoanOfferDto", e);
         }

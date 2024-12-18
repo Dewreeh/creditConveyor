@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,7 +30,7 @@ public class SelectService {
     @Transactional
     public void applyOffer(LoanOfferDto dto) {
         // Получаем заявление по statementId
-        Statement statement = getStatement(dto.getStatementId());
+        Statement statement = statementRepository.getByStatementId(dto.getStatementId());
 
         // Обновляем предложенные условия
         statement.setAppliedOffer(dto);
@@ -60,13 +61,7 @@ public class SelectService {
         return statusHistoryDto;
     }
 
-    private Statement getStatement(UUID statementUuid){
-        Statement statement = statementRepository.getByStatementId(statementUuid);
-        if (statement == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Заявка с таким ID не найдена");
-        }
-        return statement;
-    }
+
 }
 
 
