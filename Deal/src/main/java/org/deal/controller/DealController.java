@@ -4,16 +4,15 @@ import jakarta.validation.Valid;
 import org.deal.dto.FinishRegistrationRequestDto;
 import org.deal.dto.LoanOfferDto;
 import org.deal.dto.LoanStatementRequestDto;
+import org.deal.dto.ScoringDataDto;
 import org.deal.model.Client;
+import org.deal.service.FinishRegistartionService;
 import org.deal.service.SelectService;
 import org.deal.service.StatementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,11 +24,16 @@ import java.util.UUID;
 public class DealController {
     private final StatementService statementService;
     private final SelectService selectService;
+    private final FinishRegistartionService finishRegistartionService;
 
     @Autowired
-    public DealController(StatementService statementService, SelectService selectService) {
+    public DealController(StatementService statementService,
+                          SelectService selectService,
+                          FinishRegistartionService finishRegistartionService) {
+
         this.statementService = statementService;
         this.selectService = selectService;
+        this.finishRegistartionService = finishRegistartionService;
     }
 
     @PostMapping("/statement")
@@ -53,14 +57,20 @@ public class DealController {
     ResponseEntity<Object> selectOffer(@Valid @RequestBody LoanOfferDto dto){
         try {
             selectService.applyOffer(dto);
+            return ResponseEntity.ok("Успех");
         } catch (ResponseStatusException e){
             return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
         }
-        return ResponseEntity.ok("Успех");
     }
     @PostMapping("/offer/calculate")
-    ResponseEntity<Object> calculate(@Valid @RequestBody FinishRegistrationRequestDto dto){
-        return ResponseEntity.ok("Успех"); //заглушка
+    ResponseEntity<Object> calculate(@Valid @RequestBody FinishRegistrationRequestDto dto,
+                                     @RequestParam("statementId") UUID statementId){
+        try {
+            finishRegistartionService.finishRegistration(dto, statementId);
+        } catch (ResponseStatusException e){
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        }
+        return ResponseEntity.ok("Кредит посчитан!");
     }
 
 

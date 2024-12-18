@@ -1,14 +1,17 @@
 package org.deal.service;
 
+import jakarta.transaction.Transactional;
 import org.deal.dto.LoanOfferDto;
 import org.deal.dto.LoanStatementRequestDto;
 import org.deal.dto.StatementStatusHistoryDto;
 import org.deal.enums.ApplicationStatus;
 import org.deal.enums.ChangeType;
 import org.deal.model.Client;
+import org.deal.model.Passport;
 import org.deal.model.Statement;
 import org.deal.repository.ClientRepository;
 import org.deal.repository.LoanOfferAttributeConverter;
+import org.deal.repository.PassportRepository;
 import org.deal.repository.StatementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -34,12 +37,15 @@ public class StatementService {
 
     private final ClientRepository clientRepository;
     private final StatementRepository statementRepository;
+    private final PassportRepository passportRepository;
 
     @Autowired //в предыдущем МС инжектил бины через поля, узнал, что так не рекомендуется и сейчас инжекчу в конструктор :)
     public StatementService(ClientRepository clientRepository,
-                            StatementRepository statementRepository) {
+                            StatementRepository statementRepository,
+                            PassportRepository passportRepository) {
         this.clientRepository = clientRepository;
         this.statementRepository = statementRepository;
+        this.passportRepository = passportRepository;
     }
 
     //получаем офферы через МС calculator
@@ -58,7 +64,8 @@ public class StatementService {
     }
 
     public Client saveClient(LoanStatementRequestDto dto){
-        Client client = createClientEntity(dto);
+        Passport passport = savePassport(dto);
+        Client client = createClientEntity(dto, passport);
         try {
             clientRepository.save(client);
         } catch(DataIntegrityViolationException e){
@@ -68,7 +75,7 @@ public class StatementService {
         }
         return client;
     }
-
+    @Transactional
     public UUID saveStatement(Client client) {
         Statement statement = new Statement();
         UUID uuid = UUID.randomUUID();
@@ -106,10 +113,15 @@ public class StatementService {
         }
         return dto;
     }
+    public Statement getStatement(UUID statementUuid){
+        Statement statement = statementRepository.getByStatementId(statementUuid);
+        if (statement == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Заявка с таким ID не найдена");
+        }
+        return statement;
+    }
 
-
-
-    private Client createClientEntity(LoanStatementRequestDto dto) {
+    private Client createClientEntity(LoanStatementRequestDto dto, Passport passport) {
         //Заполняем инфу, которую имеем в LoanStatementRequestDto (а там не всё :( )
         Client client = new Client();
         client.setClientId(UUID.randomUUID());
@@ -118,7 +130,27 @@ public class StatementService {
         client.setFirstName(dto.getFirstName());
         client.setLastName(dto.getLastName());
         client.setMiddleName(dto.getMiddleName());
+        client.setPassport(passport);
         return client;
+    }
+    @Transactional
+    public Passport savePassport(LoanStatementRequestDto dto) {
+        Passport passport = createPassportEntity(dto);
+        try {
+            passportRepository.save(passport);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Паспорт уже существует", e);
+        }
+        return passport;
+    }
+
+    private Passport createPassportEntity(LoanStatementRequestDto dto) {
+        //сохраняем, то что есть в LoanStatementRequestDto
+        Passport passport = new Passport();
+        passport.setPassportUuid(UUID.randomUUID());
+        passport.setSeries(dto.getPassportSeries());
+        passport.setNumber(dto.getPassportNumber());
+        return passport;
     }
     private StatementStatusHistoryDto createStatusHistory(ApplicationStatus status, ChangeType changeType) {
         StatementStatusHistoryDto statusHistoryDto = new StatementStatusHistoryDto();
