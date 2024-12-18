@@ -6,6 +6,7 @@ import org.deal.dto.LoanOfferDto;
 import org.deal.dto.LoanStatementRequestDto;
 import org.deal.dto.ScoringDataDto;
 import org.deal.model.Client;
+import org.deal.service.ClientService;
 import org.deal.service.FinishRegistartionService;
 import org.deal.service.SelectService;
 import org.deal.service.StatementService;
@@ -24,29 +25,35 @@ import java.util.UUID;
 public class DealController {
     private final StatementService statementService;
     private final SelectService selectService;
+    private final ClientService clientService;
     private final FinishRegistartionService finishRegistartionService;
 
     @Autowired
     public DealController(StatementService statementService,
                           SelectService selectService,
-                          FinishRegistartionService finishRegistartionService) {
+                          FinishRegistartionService finishRegistartionService,
+                          ClientService clientService) {
 
         this.statementService = statementService;
         this.selectService = selectService;
         this.finishRegistartionService = finishRegistartionService;
+        this.clientService = clientService;
     }
 
     @PostMapping("/statement")
     ResponseEntity<Object> getOffers(@Valid @RequestBody LoanStatementRequestDto dto) {
         List<LoanOfferDto> offers;
-        //тут всё работает таким образом, что при ошибке в одной операции (например запросе на МС calculator)
-        //или при сохранении сущности (например, уже есть клиент с такой почтой),
-        //то остальные операции не выполняются
-        //возможно, логика неверная, но в ТЗ это конкретно не прописано
         try {
-            Client client = statementService.saveClient(dto); //сохраняем клиента в бд и получаем его сущность
-            UUID statementUuid = statementService.saveStatement(client); //сущность клиента передаём для сохранения заявки
+            // Получаем офферы
             offers = statementService.getOffers(dto);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        }
+
+        try {
+            // Сохраняем клиента если офферы получены (прескоринг прошел)
+            Client client = clientService.saveClient(dto);
+            UUID statementUuid = statementService.saveStatement(client);
             offers = statementService.setUuidForOffers(offers, statementUuid);
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
