@@ -1,6 +1,7 @@
 package org.deal.service;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.deal.dto.CreditDto;
 import org.deal.dto.FinishRegistrationRequestDto;
 import org.deal.dto.LoanOfferDto;
@@ -25,7 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
+@Slf4j
 @Service
 public class FinishRegistartionService {
 
@@ -51,12 +52,13 @@ public class FinishRegistartionService {
         ScoringDataDto scoringDataDto = getScoringDataDto(finishRegistrationRequestDto, client, loanOfferDto); //заполняем ScoringDataDto
         CreditDto creditDto = getCreditFromCalculator(scoringDataDto); //запрос на МС калькулятор
         Credit credit = saveCredit(creditDto);
-
+        log.info("Кредит создан с UUID: {}", credit.getCreditId());
         //обновляем состояние заявки
         statement.setCredit(credit);
         statement.setStatus(ApplicationStatus.DOCUMENT_SIGNED);
         statement.setSignDate(LocalDateTime.now());
         statementRepository.save(statement);
+        log.info("Заявка {} обновлена", statementUuid);
     }
 
      private ScoringDataDto getScoringDataDto(FinishRegistrationRequestDto finishRegistrationRequestDto, Client client, LoanOfferDto loanOfferDto){
