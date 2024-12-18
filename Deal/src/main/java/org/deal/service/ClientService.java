@@ -26,17 +26,16 @@ public class ClientService {
         this.passportRepository = passportRepository;
     }
 
-    @Transactional
-    public Client saveClient(LoanStatementRequestDto dto) {
+    public Client saveClient(LoanStatementRequestDto dto){
         Passport passport = savePassport(dto);
         Client client = createClientEntity(dto, passport);
-
         try {
             clientRepository.save(client);
-        } catch (DataIntegrityViolationException e) {
+        } catch(DataIntegrityViolationException e){
+            //сгенеренный только что id не совпадёт с id какого-либо клиента,
+            //но почта уже может быть в бд
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Клиент уже существует", e);
         }
-
         return client;
     }
 
