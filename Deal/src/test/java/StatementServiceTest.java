@@ -1,4 +1,4 @@
-package org.deal.service;
+
 
 import org.deal.dto.LoanOfferDto;
 import org.deal.dto.LoanStatementRequestDto;
@@ -8,6 +8,8 @@ import org.deal.enums.ChangeType;
 import org.deal.model.Client;
 import org.deal.model.Statement;
 import org.deal.repository.StatementRepository;
+import org.deal.service.ClientService;
+import org.deal.service.StatementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
