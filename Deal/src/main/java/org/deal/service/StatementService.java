@@ -78,6 +78,7 @@ public class StatementService {
 
         // Сохраняем заявку
         statementRepository.save(statement);
+
         return uuid;
     }
 

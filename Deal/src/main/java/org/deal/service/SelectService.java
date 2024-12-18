@@ -1,5 +1,6 @@
 package org.deal.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.deal.dto.LoanOfferDto;
 import org.deal.dto.StatementStatusHistoryDto;
 import org.deal.enums.ApplicationStatus;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+@Slf4j
 @Service
 public class SelectService {
     StatementRepository statementRepository;
@@ -36,7 +38,6 @@ public class SelectService {
         statement.setAppliedOffer(dto);
 
         StatementStatusHistoryDto statusHistoryDto = createStatusHistory(ApplicationStatus.PREAPPROVAL, ChangeType.AUTOMATIC);
-
         // Получаем текущую историю статусов
         List<StatementStatusHistoryDto> statusHistory = statement.getStatusHistory();
         if (statusHistory == null) {
@@ -51,8 +52,6 @@ public class SelectService {
 
         statementRepository.save(statement);
     }
-
-
     private StatementStatusHistoryDto createStatusHistory(ApplicationStatus status, ChangeType changeType) {
         StatementStatusHistoryDto statusHistoryDto = new StatementStatusHistoryDto();
         statusHistoryDto.setStatus(status.name());
@@ -60,8 +59,6 @@ public class SelectService {
         statusHistoryDto.setChangeType(changeType);
         return statusHistoryDto;
     }
-
-
 }
 
 
