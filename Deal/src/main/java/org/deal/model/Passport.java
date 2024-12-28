@@ -15,6 +15,5 @@ public class Passport {
     private String number;
     private String issueBranch;
     private LocalDate issueDate;
-    private String additionalInfo;
 
 }
