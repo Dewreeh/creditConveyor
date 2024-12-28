@@ -5,10 +5,7 @@ import lombok.Data;
 import org.deal.dto.LoanOfferDto;
 import org.deal.dto.StatementStatusHistoryDto;
 import org.deal.enums.ApplicationStatus;
-import org.deal.repository.LoanOfferAttributeConverter;
-import org.deal.repository.StatusHistoryConverter;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.Type;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
@@ -44,7 +41,7 @@ public class Statement {
 
     private UUID sesCode;
 
-    @Convert(converter = StatusHistoryConverter.class)
+
     @JdbcTypeCode( SqlTypes.JSON )
     private List<StatementStatusHistoryDto> statusHistory;
 }

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.deal.dto.PaymentScheduleElementDto;
 import org.deal.enums.CreditStatus;
-import org.deal.repository.PaymentScheduleConverter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
