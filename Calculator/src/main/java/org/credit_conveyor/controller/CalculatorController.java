@@ -50,11 +50,9 @@ public class CalculatorController {
 
      ResponseEntity<Object> offers(@RequestBody LoanStatementRequestDto dto){
         log.info("Запрос на на API /offers, входные данные: {}", dto);
-        if(!offersService.isValid(dto)){
-            log.warn("Прескоринг не пройден на /offers: {}", dto);
-            return ResponseEntity.unprocessableEntity().body("Данные не прошли прескоринг. Пожалуйста, перепроверьте их и отправьте новый запрос");
-        }
+
         List<LoanOfferDto> offers = offersService.getOffers(dto);
+
         log.info("Выходные данные по API /offers: {}", offers);
         return ResponseEntity.ok(offers);
     }

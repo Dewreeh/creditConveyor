@@ -20,11 +20,28 @@ public class RestQueriesService {
     }
 
     public List<LoanOfferDto> getOffersFromDeal(LoanStatementRequestDto dto){
-       return restClient.post()
-                .uri("http://localhost:8080/deal/offer")
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(dto)
-                .retrieve()
-                .body(new ParameterizedTypeReference<List<LoanOfferDto>>() {});
+        try {
+            return restClient.post()
+                    .uri("http://localhost:8090/deal/statement")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(dto)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<List<LoanOfferDto>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("Не удалось получить офферы", e);
+        }
+     }
+
+     public void selectOffer(LoanOfferDto dto){
+         try {
+             restClient.post()
+                     .uri("http://localhost:8090/deal/offer/select")
+                     .contentType(MediaType.APPLICATION_JSON)
+                     .body(dto)
+                     .retrieve()
+                     .toBodilessEntity();
+         } catch (Exception e) {
+             throw new RuntimeException("Произошла ошибка при выборе оффера", e);
+         }
      }
 }
