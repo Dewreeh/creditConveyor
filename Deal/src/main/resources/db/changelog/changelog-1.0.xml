@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <changeSet id="1" author="Valery Repin">
+        <createTable tableName="passport">
+            <column name="passport_uuid" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="series" type="varchar(4)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number" type="varchar(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="issue_branch" type="varchar(12)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="issue_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="additional_info" type="jsonb"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="Valery Repin">
+        <createTable tableName="employment">
+            <column name="employment_uuid" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="employer_inn" type="varchar(12)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="salary" type="decimal">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="work_experience_total" type="int"/>
+            <column name="work_experience_current" type="int"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="Valery Repin">
+        <createTable tableName="client">
+            <column name="client_id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(30)"/>
+            <column name="first_name" type="varchar(30)"/>
+            <column name="middle_name" type="varchar(30)"/>
+            <column name="birth_date" type="date"/>
+            <column name="email" type="varchar(256)">
+                <constraints unique="true"/>
+            </column>
+            <column name="gender" type="varchar(10)"/>
+            <column name="marital_status" type="varchar(20)"/>
+            <column name="dependent_amount" type="int"/>
+            <column name="passport_id" type="uuid">
+                <constraints foreignKeyName="fk_client_passport"
+                             references="passport(passport_uuid)"/>
+            </column>
+            <column name="employment_id" type="uuid">
+                <constraints foreignKeyName="fk_client_employment"
+                             references="employment(employment_uuid)"/>
+            </column>
+            <column name="account_number" type="varchar(100)">
+                <constraints unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4" author="Valery Repin">
+        <createTable tableName="credit">
+            <column name="credit_id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="amount" type="decimal"/>
+            <column name="term" type="int"/>
+            <column name="monthly_payment" type="decimal"/>
+            <column name="rate" type="decimal"/>
+            <column name="psk" type="decimal"/>
+            <column name="payment_schedule" type="jsonb"/>
+            <column name="insurance_enabled" type="boolean"/>
+            <column name="credit_status" type="varchar(10)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="5" author="Valery Repin">
+        <createTable tableName="statement">
+            <column name="statement_id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="client_id" type="uuid">
+                <constraints foreignKeyName="fk_statement_client"
+                             references="client(client_id)"/>
+            </column>
+            <column name="credit_id" type="uuid">
+                <constraints foreignKeyName="fk_statement_credit"
+                             references="credit(credit_id)"/>
+            </column>
+            <column name="status" type="varchar(20)"/>
+            <column name="creation_date" type="timestamp"/>
+            <column name="applied_offer" type="jsonb"/>
+            <column name="sign_date" type="timestamp"/>
+            <column name="ses_code" type="uuid"/>
+            <column name="status_history" type="jsonb"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

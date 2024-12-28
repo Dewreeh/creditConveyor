@@ -7,6 +7,9 @@ import org.deal.dto.StatementStatusHistoryDto;
 import org.deal.enums.ApplicationStatus;
 import org.deal.repository.LoanOfferAttributeConverter;
 import org.deal.repository.StatusHistoryConverter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,7 +37,7 @@ public class Statement {
     private LocalDateTime creationDate;
 
     @Column(name = "applied_offer", columnDefinition = "jsonb")
-    @Convert(converter = LoanOfferAttributeConverter.class)
+    @JdbcTypeCode( SqlTypes.JSON  )
     private LoanOfferDto appliedOffer;
 
     private LocalDateTime signDate;
@@ -42,6 +45,6 @@ public class Statement {
     private UUID sesCode;
 
     @Convert(converter = StatusHistoryConverter.class)
-    @Column(name = "status_history", columnDefinition = "jsonb", nullable = false)
+    @JdbcTypeCode( SqlTypes.JSON )
     private List<StatementStatusHistoryDto> statusHistory;
 }

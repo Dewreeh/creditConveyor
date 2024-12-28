@@ -4,8 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.deal.dto.PaymentScheduleElementDto;
 import org.deal.enums.CreditStatus;
-import org.deal.repository.LoanOfferAttributeConverter;
 import org.deal.repository.PaymentScheduleConverter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,7 +29,7 @@ public class Credit {
         private BigDecimal psk;
 
         @Column(name = "payment_schedule", columnDefinition = "jsonb")
-        @Convert(converter = PaymentScheduleConverter.class)
+        @JdbcTypeCode( SqlTypes.JSON )
         private List<PaymentScheduleElementDto> paymentSchedule;
 
         private Boolean insuranceEnabled;
