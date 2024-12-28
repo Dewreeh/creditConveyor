@@ -1,5 +1,9 @@
 package org.statement.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +31,18 @@ public class StatementController {
         this.restQueriesService = restQueriesService;
     }
 
+
     @PostMapping()
+    @Operation(
+            summary = "Получение 4х кредитных предложений LoanOfferDto",
+            description = "Проводит прескоринг данных клиента и возвращает доступные кредитные предложения, если прескоринг пройден",
+
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Список кредитных предложений", content = @Content(schema = @Schema(implementation = LoanOfferDto[].class))),
+                @ApiResponse(responseCode = "422", description = "Данные не прошли прескоринг"),
+                @ApiResponse(responseCode = "500", description = "Произошла ошибка")
+            }
+    )
     ResponseEntity<Object> statementHandler(@RequestBody LoanStatementRequestDto dto){
         try {
             // Выполняем прескоринг
@@ -45,6 +60,15 @@ public class StatementController {
     }
 
     @PostMapping("/select/offer")
+    @Operation(
+            summary = "Выбор конкретного кредитного предложения",
+            description = "Сохраняет выбранное кредитное предложение в заявку в БД",
+
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Оффер успешно сохранён"),
+                    @ApiResponse(responseCode = "500", description = "Произошла ошибка при выборе оффера")
+            }
+    )
     ResponseEntity<Object> selectOffer(@Valid @RequestBody LoanOfferDto dto){
         try {
             restQueriesService.selectOffer(dto);
