@@ -2,12 +2,10 @@ package org.deal.service;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.deal.dto.CreditDto;
-import org.deal.dto.FinishRegistrationRequestDto;
-import org.deal.dto.LoanOfferDto;
-import org.deal.dto.ScoringDataDto;
+import org.deal.dto.*;
 import org.deal.enums.ApplicationStatus;
 import org.deal.enums.CreditStatus;
+import org.deal.enums.Theme;
 import org.deal.model.Client;
 import org.deal.model.Credit;
 import org.deal.model.Statement;
@@ -29,15 +27,16 @@ public class FinishRegistartionService {
 
     private final CreditRepository creditRepository;
     private final StatementRepository statementRepository;
+    private final KafkaProducerService kafkaProducerService;
 
 
     @Autowired
-    public FinishRegistartionService(StatementService statementService,
-                                     CreditRepository creditRepository,
-                                     StatementRepository statementRepository) {
+    public FinishRegistartionService(CreditRepository creditRepository,
+                                     StatementRepository statementRepository,
+                                     KafkaProducerService kafkaProducerService) {
         this.creditRepository = creditRepository;
         this.statementRepository = statementRepository;
-
+        this.kafkaProducerService = kafkaProducerService;
     }
     @Transactional
     public void finishRegistration(FinishRegistrationRequestDto finishRegistrationRequestDto, UUID statementUuid){
@@ -55,6 +54,12 @@ public class FinishRegistartionService {
         statement.setStatus(ApplicationStatus.DOCUMENT_SIGNED);
         statement.setSignDate(LocalDateTime.now());
         statementRepository.save(statement);
+
+        kafkaProducerService.sendMessage("finish-registration", new EmailMessageDto(client.getEmail(),
+                Theme.CREATE_DOCUMENTS,
+                statement.getStatementId(),
+                "Перейти к оформлению документов"));
+
         log.info("Заявка {} обновлена", statementUuid);
     }
 
