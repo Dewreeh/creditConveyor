@@ -1,44 +1,70 @@
 package org.gateway.controller;
 
+import org.gateway.dto.FinishRegistrationRequestDto;
 import org.gateway.dto.LoanOfferDto;
 import org.gateway.dto.LoanStatementRequestDto;
+import org.gateway.service.RestService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/gateway")
 public class GatewayController {
 
+    private final RestService restService;
 
-    @PostMapping("/deal/statement")
-    ResponseEntity<Object> dealStatementAPI(@RequestBody LoanStatementRequestDto loanStatementRequestDto){
-
-        return null; //пока заглушка
+    @Autowired
+    public GatewayController(RestService restService) {
+        this.restService = restService;
     }
 
-    @PostMapping("/deal/offer/select")
-    ResponseEntity<Object> dealOfferSelectAPI(@RequestBody LoanOfferDto loanOfferDto){
 
-        return null; //пока заглушка
+    // deal/statement и /deal/offer/select здесь нет, т.к. они вызываются через statement
+
+
+    @PostMapping("/deal/calculate{statementId}")
+    ResponseEntity<String> dealCalculateAPI(@RequestParam("statementId") UUID statementId,
+                                            @RequestBody FinishRegistrationRequestDto finishRegistrationRequestDto){
+        try {
+            return restService.sendRequestToDealCalculate(statementId, finishRegistrationRequestDto);
+        } catch (HttpClientErrorException.UnprocessableEntity e) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body("Скоринг не пройден");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Ошибка на сервере");
+        }
     }
 
-    @PostMapping("/deal/calculate")
-    ResponseEntity<Object> dealOfferSelectAPI(@RequestBody LoanStatementRequestDto loanStatementRequestDto){
-
-        return null; //пока заглушка
-    }
 
     @PostMapping("/statement/statement")
-    ResponseEntity<Object> statementStatementAPI(@PathVariable("statementId") UUID statementID){
+    ResponseEntity<Object> statementStatementAPI(@RequestBody LoanStatementRequestDto loanStatementRequestDto){
+        try {
+            List<LoanOfferDto> response = restService.sendRequestToStatementStatement(loanStatementRequestDto);
+            return ResponseEntity.ok(response);
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ошибка на сервере: " + e.getMessage());
+        }
 
-        return null; //пока заглушка
     }
 
     @PostMapping("/statement/offer")
-    ResponseEntity<Object> statementOfferAPI(@RequestBody LoanOfferDto loanOfferDto){
+    ResponseEntity<String> statementOfferAPI(@RequestBody LoanOfferDto loanOfferDto){
+        try {
+            return restService.sendRequestToStatementOffer(loanOfferDto);
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
 
-        return null; //пока заглушка
     }
 }
