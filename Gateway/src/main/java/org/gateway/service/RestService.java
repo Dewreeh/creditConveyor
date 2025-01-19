@@ -55,7 +55,7 @@ public class RestService {
                 .body(dto)
                 .retrieve()
                 .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
-                    throw new RuntimeException("Ошибка на сервере: " + response.getStatusCode());
+                    throw new RuntimeException("Ошибка на сервере: " + response.getBody());
                 })
                 .toEntity(String.class);
     }
