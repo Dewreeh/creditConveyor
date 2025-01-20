@@ -5,8 +5,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.deal.dto.EmailMessageDto;
+import org.deal.enums.ApplicationStatus;
+import org.deal.enums.CreditStatus;
 import org.deal.enums.Theme;
 import org.deal.model.Statement;
+import org.deal.repository.CreditRepository;
 import org.deal.repository.StatementRepository;
 import org.deal.service.KafkaProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +27,13 @@ public class DocumentController {
 
     private final KafkaProducerService kafkaProducerService;
     private final StatementRepository statementRepository; //чтобы по заявке достать клиента и его почту
+    private final CreditRepository creditRepository;
 
     @Autowired
-    public DocumentController(KafkaProducerService kafkaProducerService, StatementRepository statementRepository) {
+    public DocumentController(KafkaProducerService kafkaProducerService, StatementRepository statementRepository, CreditRepository creditRepository) {
         this.kafkaProducerService = kafkaProducerService;
         this.statementRepository = statementRepository;
+        this.creditRepository = creditRepository;
     }
     @Operation(
             summary = "Запрос на отправку документов брокеру",
@@ -103,18 +108,28 @@ public class DocumentController {
             }
     )
     @PostMapping("{statementId}/code")
-    public ResponseEntity<Object> code(@PathVariable("statementId") UUID statementId){
+    public ResponseEntity<Object> code(@PathVariable("statementId") UUID statementId,
+                                       @PathVariable("code") UUID sesCode){
+
         Statement statement = statementRepository.getByStatementId(statementId);
 
-        String email = statement.getClient().getEmail();
+        if(statement.getSesCode() == sesCode){
+            statement.setStatus(ApplicationStatus.CREDIT_ISSUED);
+        }
 
-        kafkaProducerService.sendMessage("ses-code", new EmailMessageDto(
+        statement.getCredit().setCreditStatus(CreditStatus.ISSUED);
+        creditRepository.save(statement.getCredit());
+
+
+        String email = statement.getClient().getEmail(); //получаем почту пользователя
+
+        kafkaProducerService.sendMessage("credit-issued", new EmailMessageDto(
                 email,
                 Theme.SEND_SES,
                 statementId,
-                "Ваш ПЭП-код ****"
+                "Кредит выдан! "
         ));
-        log.info("Получен запрос на отправку кода ПЭП по заявке {}", statementId);
+
         return ResponseEntity.ok().body("Запрос отправлен");
     }
 }
