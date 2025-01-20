@@ -55,10 +55,10 @@ public class FinishRegistartionService {
         statement.setSignDate(LocalDateTime.now());
         statementRepository.save(statement);
 
-        kafkaProducerService.sendMessage("finish-registration", new EmailMessageDto(client.getEmail(),
-                Theme.CREATE_DOCUMENTS,
+        kafkaProducerService.sendMessage("finish-registration", new EmailMessageDto(statement.getClient().getEmail(),
+                Theme.FINISH_REGISTRATION,
                 statement.getStatementId(),
-                "Перейти к оформлению документов"));
+                "Заявка предварительно одобрена, завершите оформление"));
 
         log.info("Заявка {} обновлена", statementUuid);
     }
