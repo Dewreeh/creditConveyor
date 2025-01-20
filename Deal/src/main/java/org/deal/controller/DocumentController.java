@@ -41,26 +41,22 @@ public class DocumentController {
                     )
             }
     )
-    @PostMapping("{statementId}/send")
-    public ResponseEntity<Object> send(@PathVariable("statementId") UUID statementId){
-        //Не было сказано про логику формирования документов, потому этот и последующие хэндлеры
-        //по сути просто заглушки для имитации логики работы системы
+    public ResponseEntity<Object> send(@PathVariable UUID statementId){
 
         //по заявке получаем почту клиента
         Statement statement = statementRepository.getByStatementId(statementId);
 
-        log.info("Получен запрос на отправку документов по заявке {}", statementId);
         String email = statement.getClient().getEmail();
-        log.info("Получена почта клиента по заявке {}: ", statementId);
+
+
         kafkaProducerService.sendMessage("send-documents", new EmailMessageDto(
                 email,
                 Theme.SEND_DOCUMENTS,
                 statementId,
-                "Ваш ПЭП-код ****"
+                "Вот ваши документы: \n Ссылка на согласие: http://localhost:8120/gateway/deal/document/{}" + statementId + "/sign"
         ));
 
-
-        return ResponseEntity.ok().body("Формируются документы");
+        return ResponseEntity.ok().body("Документы формируются");
     }
 
     @Operation(
