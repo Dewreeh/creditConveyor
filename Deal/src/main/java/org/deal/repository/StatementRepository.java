@@ -11,4 +11,6 @@ public interface StatementRepository extends CrudRepository<Statement, UUID> {
     <S extends Statement> S save(S entity);
     <S extends  Statement> S getByStatementId(UUID uuid);
 
+
+
 }
