@@ -75,19 +75,24 @@ public class DocumentController {
             }
     )
     @PostMapping("{statementId}/sign")
-    public ResponseEntity<Object> sign(@PathVariable("statementId") UUID statementId){
+    public ResponseEntity<Object> sign(@PathVariable UUID statementId){
         Statement statement = statementRepository.getByStatementId(statementId);
 
         String email = statement.getClient().getEmail();
 
-        kafkaProducerService.sendMessage("credit-issued", new EmailMessageDto(
+        UUID sesCode = UUID.randomUUID();
+        statement.setSesCode(sesCode); //генерируем ses-code
+
+        statementRepository.save(statement); //сохраняем в statement сгенерированный sesCode;
+
+        kafkaProducerService.sendMessage("send-ses", new EmailMessageDto(
                 email,
-                Theme.SEND_SES,
+                Theme.SEND_DOCUMENTS,
                 statementId,
-                "Кредит выдан"
+                "Ваш ses-code: {} \n " + sesCode
+                        + "Ссылка на подписание: http://localhost:8120/gateway/deal/document/{}/{}" + statementId + sesCode
         ));
-        log.info("Получен запрос на подписание документов по заявке {}", statementId);
-        return ResponseEntity.ok().body("Документ подписан");
+        return ResponseEntity.ok().body("SecCode сформирован, ссылка на подписание отправлена");
     }
 
     @Operation(
