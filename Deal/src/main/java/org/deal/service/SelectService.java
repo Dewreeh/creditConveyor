@@ -48,10 +48,11 @@ public class SelectService {
         // Обновляем историю в заявке
         statement.setStatusHistory(statusHistory);
 
+
         kafkaProducerService.sendMessage("finish-registration", new EmailMessageDto(statement.getClient().getEmail(),
                 Theme.FINISH_REGISTRATION,
                 statement.getStatementId(),
-                "Завершите оформление"));
+                "Заявка предварительно одобрена, завершите оформление"));
 
         statementRepository.save(statement);
     }
