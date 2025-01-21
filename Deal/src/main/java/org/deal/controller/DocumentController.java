@@ -130,7 +130,7 @@ public class DocumentController {
 
             kafkaProducerService.sendMessage("credit-issued", new EmailMessageDto(
                     email,
-                    Theme.SEND_SES,
+                    Theme.CREDIT_ISSUED,
                     statementId,
                     "Ваш кредит оформлен!"
             ));
