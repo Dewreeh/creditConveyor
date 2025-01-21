@@ -1,5 +1,7 @@
 package org.deal.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.deal.dto.EmailMessageDto;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -9,16 +11,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class KafkaProducerService {
 
-    private final KafkaTemplate<String, EmailMessageDto> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
 
-    public KafkaProducerService(KafkaTemplate<String, EmailMessageDto> kafkaTemplate) {
+    public KafkaProducerService(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
 
     }
 
     public void sendMessage(String topic, EmailMessageDto message) {
-        log.info("Отправка сообщения брокеру {}, {}, {}", message.getAdress(), message.getStatementId(), message.getText());
-        kafkaTemplate.send(topic, message);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String messageJson = objectMapper.writeValueAsString(message);
+
+            kafkaTemplate.send(topic, messageJson);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 }

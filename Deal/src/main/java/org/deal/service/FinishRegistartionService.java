@@ -58,7 +58,8 @@ public class FinishRegistartionService {
         kafkaProducerService.sendMessage("create-documents", new EmailMessageDto(client.getEmail(),
                 Theme.FINISH_REGISTRATION,
                 statement.getStatementId(),
-                "Кредит одобрен, ссылка на формирование документов: http://localhost:8120/gateway/deal/documents/{}/send" + statementUuid));
+                "Кредит одобрен, ссылка на формирование документов: http://localhost:8120/gateway/deal/documents/" + statementUuid + "/send"));
+        statement.setStatus(ApplicationStatus.APPROVED);
 
         log.info("Заявка {} обновлена", statementUuid);
     }
