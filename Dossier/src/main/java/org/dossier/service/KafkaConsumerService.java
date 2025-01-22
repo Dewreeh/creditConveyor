@@ -13,15 +13,18 @@ import org.springframework.stereotype.Service;
 public class KafkaConsumerService {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
-    public KafkaConsumerService(KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper) {
+    private final MailService mailService;
+    public KafkaConsumerService(KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper, MailService mailService) {
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
+        this.mailService = mailService;
     }
 
     @KafkaListener(topics = "finish-registration", groupId = "dossier-consumer-group")
     public void listenFinishRegistration(String message) {
         try {
             EmailMessageDto dto = objectMapper.readValue(message, EmailMessageDto.class);
+            mailService.sendEmail(dto.getAddress(), dto.getTheme().toString(), dto.getText());
             log.info("Получено сообщение в топике finish-registration: {}\n {}", dto, message);
         } catch (Exception e) {
             log.error("Ошибка обработки сообщения из finish-registration: {}", message, e);
@@ -32,6 +35,7 @@ public class KafkaConsumerService {
     public void listenCreateDocuments(String message) {
         try {
             EmailMessageDto dto = objectMapper.readValue(message, EmailMessageDto.class);
+            mailService.sendEmail(dto.getAddress(), dto.getTheme().toString(), dto.getText());
             log.info("Получено сообщение в топике create-documents: {}", dto);
         } catch (Exception e) {
             log.error("Ошибка обработки сообщения из create-documents: {}", message, e);
@@ -42,6 +46,7 @@ public class KafkaConsumerService {
     public void listenSendDocuments(String message) {
         try {
             EmailMessageDto dto = objectMapper.readValue(message, EmailMessageDto.class);
+            mailService.sendEmail(dto.getAddress(), dto.getTheme().toString(), dto.getText());
             log.info("Получено сообщение в топике send-documents: {}", dto);
         } catch (Exception e) {
             log.error("Ошибка обработки сообщения из send-documents: {}", message, e);
@@ -52,6 +57,7 @@ public class KafkaConsumerService {
     public void listenSendSes(String message) {
         try {
             EmailMessageDto dto = objectMapper.readValue(message, EmailMessageDto.class);
+            mailService.sendEmail(dto.getAddress(), dto.getTheme().toString(), dto.getText());
             log.info("Получено сообщение в топике send-ses: {}", dto);
         } catch (Exception e) {
             log.error("Ошибка обработки сообщения из send-ses: {}", message, e);
@@ -62,6 +68,7 @@ public class KafkaConsumerService {
     public void listenCreditIssued(String message) {
         try {
             EmailMessageDto dto = objectMapper.readValue(message, EmailMessageDto.class);
+            mailService.sendEmail(dto.getAddress(), dto.getTheme().toString(), dto.getText());
             log.info("Получено сообщение в топике credit-issued: {}", dto);
         } catch (Exception e) {
             log.error("Ошибка обработки сообщения из credit-issued: {}", message, e);

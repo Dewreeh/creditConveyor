@@ -122,6 +122,7 @@ public class DocumentController {
         Statement statement = statementRepository.getByStatementId(statementId);
 
         //сравниваем ПЭП код из БД и тот, что прислал клиент
+
         if(statement != null) {
             if (statement.getSesCode().equals(UserCode)) {
                 statement.setStatus(ApplicationStatus.DOCUMENT_SIGNED);
@@ -140,6 +141,7 @@ public class DocumentController {
             }
             log.info("Не совпадает код ПЭП: " + statementId);
             return ResponseEntity.ok().body("Не совпадает код ПЭП");
+
         }
         return ResponseEntity.ok().body("Заявка не существует");
     }
