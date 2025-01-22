@@ -122,22 +122,25 @@ public class DocumentController {
         Statement statement = statementRepository.getByStatementId(statementId);
 
         //сравниваем ПЭП код из БД и тот, что прислал клиент
-        if(statement != null && statement.getSesCode().equals(UserCode)) {
-            statement.setStatus(ApplicationStatus.DOCUMENT_SIGNED);
-            statement.getCredit().setCreditStatus(CreditStatus.ISSUED);
+        if(statement != null) {
+            if (statement.getSesCode().equals(UserCode)) {
+                statement.setStatus(ApplicationStatus.DOCUMENT_SIGNED);
+                statement.getCredit().setCreditStatus(CreditStatus.ISSUED);
 
-            String email = statement.getClient().getEmail(); //получаем почту клиента
+                String email = statement.getClient().getEmail(); //получаем почту клиента
 
-            kafkaProducerService.sendMessage("credit-issued", new EmailMessageDto(
-                    email,
-                    Theme.SEND_SES,
-                    statementId,
-                    "Ваш кредит оформлен!"
-            ));
-            log.info("Документ подписан!" + statementId);
-            return ResponseEntity.ok().body("Документ успешно подписан!");
+                kafkaProducerService.sendMessage("credit-issued", new EmailMessageDto(
+                        email,
+                        Theme.SEND_SES,
+                        statementId,
+                        "Ваш кредит оформлен!"
+                ));
+                log.info("Документ подписан!" + statementId);
+                return ResponseEntity.ok().body("Документ успешно подписан!");
+            }
+            log.info("Не совпадает код ПЭП: " + statementId);
+            return ResponseEntity.ok().body("Не совпадает код ПЭП");
         }
-        log.info("Не совпадает код ПЭП или заявка не существует: " + statementId);
-        return ResponseEntity.ok().body("Не совпадает код ПЭП или заявка не существует");
+        return ResponseEntity.ok().body("Заявка не существует");
     }
 }

@@ -65,6 +65,39 @@ public class GatewayController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
 
+    @PostMapping("/deal/document/{statementId}/send")
+    ResponseEntity<String> dealDocumentSendApi(@PathVariable("statementId") UUID statementId){
+        try {
+            return restService.sendRequestToDealDocumentSend(statementId);
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/deal/document/{statementId}/sign")
+    ResponseEntity<String> dealDocumentSignApi(@PathVariable("statementId") UUID statementId){
+        try {
+            return restService.sendRequestToDealDocumentSign(statementId);
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/deal/document/{statementId}/{code}")
+    ResponseEntity<String> dealDocumentSignApi(@PathVariable("statementId") UUID statementId,
+                                               @PathVariable("code") UUID ses_code){
+        try {
+            return restService.sendRequestToDealDocumentCode(statementId, ses_code);
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 }
