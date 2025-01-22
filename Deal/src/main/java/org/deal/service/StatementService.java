@@ -39,7 +39,6 @@ public class StatementService {
         try {
             return restClient.post()
                     .uri("http://localhost:8080/calculator/offers")
-                    .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .body(dto)
                     .retrieve()
                     .body(new ParameterizedTypeReference<List<LoanOfferDto>>() {});

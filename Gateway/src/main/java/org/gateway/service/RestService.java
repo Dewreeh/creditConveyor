@@ -32,7 +32,7 @@ public class RestService {
                         .scheme("http")
                         .host("localhost")
                         .port(8090)
-                        .path("/deal/offer/calculate") // Только путь!
+                        .path("/deal/offer/calculate")
                         .queryParam("statementId", statementId.toString())
                         .build())
                 .body(dto)
@@ -57,6 +57,30 @@ public class RestService {
                 .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
                     throw new RuntimeException("Ошибка на сервере: " + response.getBody());
                 })
+                .toEntity(String.class);
+    }
+
+    public ResponseEntity<String> sendRequestToDealDocumentSend(UUID statementId){
+        String url = dealDomain + "/deal/document/" + statementId + "/send";
+        return restClient.post()
+                .uri(url)
+                .retrieve()
+                .toEntity(String.class);
+    }
+
+    public ResponseEntity<String> sendRequestToDealDocumentSign(UUID statementId){
+        String url = dealDomain + "/deal/document/" + statementId + "/sign";
+        return restClient.post()
+                .uri(url)
+                .retrieve()
+                .toEntity(String.class);
+    }
+
+    public ResponseEntity<String> sendRequestToDealDocumentCode(UUID statementId, UUID ses_code){
+        String url = dealDomain + "/deal/document/" + statementId + "/" + ses_code;
+        return restClient.post()
+                .uri(url)
+                .retrieve()
                 .toEntity(String.class);
     }
 }
