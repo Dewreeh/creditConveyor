@@ -29,7 +29,7 @@ public class StatementService {
     private final StatementRepository statementRepository;
 
     @Autowired
-    public StatementService(StatementRepository statementRepository, ClientService clientService) {
+    public StatementService(StatementRepository statementRepository) {
         this.statementRepository = statementRepository;
     }
 
@@ -88,14 +88,21 @@ public class StatementService {
     }
 
     // Получение заявки по UUID
-    public Statement getStatement(UUID statementUuid) {
+    public Statement getStatement(UUID statementUuid) throws Exception {
         Statement statement = statementRepository.getByStatementId(statementUuid);
         if (statement == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Заявка с таким ID не найдена");
+            throw new Exception("Заявка с таким ID не найдена");
         }
         return statement;
     }
 
+    public List<Statement> getAllStatements() throws Exception {
+        List<Statement> statementList = (List<Statement>) statementRepository.findAll();
+        if (statementList == null) {
+            throw new Exception("Неизвестная ошибка");
+        }
+        return statementList;
+    }
     // Создание истории статуса заявки
     private StatementStatusHistoryDto createStatusHistory(ApplicationStatus status, ChangeType changeType) {
         StatementStatusHistoryDto statusHistoryDto = new StatementStatusHistoryDto();
