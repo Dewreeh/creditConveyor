@@ -18,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -64,7 +65,7 @@ class StatementServiceTest {
 
 
     @Test
-    void testGetStatementSuccess() {
+    void testGetStatementSuccess() throws Exception {
         UUID statementId = UUID.randomUUID();
         Statement statement = new Statement();
         statement.setStatementId(statementId);

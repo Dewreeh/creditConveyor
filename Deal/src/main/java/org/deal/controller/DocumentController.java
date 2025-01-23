@@ -35,6 +35,7 @@ public class DocumentController {
         this.kafkaProducerService = kafkaProducerService;
         this.statementRepository = statementRepository;
     }
+    @PostMapping("{statementId}/send")
     @Operation(
             summary = "Запрос на отправку документов брокеру",
             description = "Отправляет брокеру запрос на отправку документов для МС dossier.",
@@ -46,7 +47,6 @@ public class DocumentController {
                     )
             }
     )
-    @PostMapping("{statementId}/send")
     public ResponseEntity<Object> send(@PathVariable("statementId") UUID statementId){
 
         //по заявке получим почту клиента
@@ -70,6 +70,7 @@ public class DocumentController {
         return ResponseEntity.ok().body("Формируются документы");
     }
 
+    @PostMapping("{statementId}/sign")
     @Operation(
             summary = "Запрос на подпись документов брокеру",
             description = "Отправляет брокеру запрос на подпись документов для МС dossier.",
@@ -81,7 +82,6 @@ public class DocumentController {
                     )
             }
     )
-    @PostMapping("{statementId}/sign")
     public ResponseEntity<Object> sign(@PathVariable("statementId") UUID statementId){
         Statement statement = statementRepository.getByStatementId(statementId);
 
@@ -105,6 +105,7 @@ public class DocumentController {
         return ResponseEntity.ok().body("Отправлен ses-code");
     }
 
+    @PostMapping("{statementId}/{code}")
     @Operation(
             summary = "Запрос на отправку кода ПЭП брокеру",
             description = "Отправляет брокеру запрос на отправку сформированного кода ПЭП для МС dossier.",
@@ -116,7 +117,6 @@ public class DocumentController {
                     )
             }
     )
-    @PostMapping("{statementId}/{code}")
     public ResponseEntity<Object> code(@PathVariable("statementId") UUID statementId,
                                        @PathVariable("code") UUID UserCode){
         Statement statement = statementRepository.getByStatementId(statementId);
