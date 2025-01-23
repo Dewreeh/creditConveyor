@@ -66,7 +66,7 @@ public class DocumentController {
         ));
 
         statement.setStatus(ApplicationStatus.DOCUMENT_CREATED);
-
+        log.info("Получен и отправлен в MC dossier запрос на формирование документов по заявке " + statement);
         return ResponseEntity.ok().body("Формируются документы");
     }
 
@@ -101,7 +101,7 @@ public class DocumentController {
                         "Подпишите по ссылке: " + "http://localhost:8120/gateway/deal/document/" + statementId + "/" + ses_code)
                 ));
 
-        log.info("Получен запрос на подписание документов по заявке " + statement);
+        log.info("Получен и отправлен в MC dossier запрос на подписание документов по заявке " + statement);
         return ResponseEntity.ok().body("Отправлен ses-code");
     }
 
@@ -124,7 +124,7 @@ public class DocumentController {
         //сравниваем ПЭП код из БД и тот, что прислал клиент
 
         if(statement != null) {
-            if (statement.getSesCode().equals(UserCode)) {
+            if(statement.getSesCode().equals(UserCode)) {
                 statement.setStatus(ApplicationStatus.DOCUMENT_SIGNED);
                 statement.getCredit().setCreditStatus(CreditStatus.ISSUED);
 
@@ -140,7 +140,7 @@ public class DocumentController {
                 return ResponseEntity.ok().body("Документ успешно подписан!");
             }
             log.info("Не совпадает код ПЭП: " + statementId);
-            return ResponseEntity.ok().body("Не совпадает код ПЭП");
+            return ResponseEntity.badRequest().body("Не совпадает код ПЭП");
 
         }
         return ResponseEntity.ok().body("Заявка не существует");
