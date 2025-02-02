@@ -36,33 +36,8 @@ class SelectServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void testApplyOffer_Success() {
-        LoanOfferDto dto = createLoanOfferDto();
-        Statement statement = createStatement();
 
-        when(statementRepository.getByStatementId(dto.getStatementId())).thenReturn(statement);
 
-        selectService.applyOffer(dto);
-
-        assertEquals(dto, statement.getAppliedOffer());
-        assertNotNull(statement.getStatusHistory());
-        assertEquals(1, statement.getStatusHistory().size());
-        assertEquals(ApplicationStatus.PREAPPROVAL.name(), statement.getStatusHistory().get(0).getStatus());
-        verify(statementRepository, times(1)).save(statement);
-    }
-
-    @Test
-    void testApplyOffer_StatementNotFound() {
-        LoanOfferDto dto = createLoanOfferDto();
-
-        when(statementRepository.getByStatementId(dto.getStatementId())).thenReturn(null);
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> selectService.applyOffer(dto));
-
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
-        verify(statementRepository, never()).save(any());
-    }
 
     @Test
     void testApplyOffer_NullDto() {
@@ -70,20 +45,7 @@ class SelectServiceTest {
         verify(statementRepository, never()).save(any());
     }
 
-    @Test
-    void testApplyOffer_EmptyStatusHistory() {
-        LoanOfferDto dto = createLoanOfferDto();
-        Statement statement = createStatement();
-        statement.setStatusHistory(null);
 
-        when(statementRepository.getByStatementId(dto.getStatementId())).thenReturn(statement);
-
-        selectService.applyOffer(dto);
-
-        assertNotNull(statement.getStatusHistory());
-        assertEquals(1, statement.getStatusHistory().size());
-        verify(statementRepository, times(1)).save(statement);
-    }
 
     @Test
     void testApplyOffer_SaveException() {

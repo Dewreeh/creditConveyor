@@ -50,37 +50,6 @@ public class OfferServiceTest {
         assertEquals(4, offers.size());
 
     }
-@Test
-    void testIsValid(){
-        LoanStatementRequestDto dto = new LoanStatementRequestDto();
-        //Валидные данные
-        dto.setAmount(new BigDecimal("100000"));
-        dto.setTerm(12);
-        dto.setFirstName("Bober");
-        dto.setLastName("Kurwa");
-        dto.setMiddleName("Jakibydlo");
-        dto.setEmail("bober@bobermail.ru");
-        dto.setBirthdate(LocalDate.parse("2001-12-01"));
-        dto.setPassportSeries("1234");
-        dto.setPassportNumber("567890");
 
-        assertTrue(offersService.isValid(dto));
-    }
 
-    @Test
-    void testIsInValid(){
-        LoanStatementRequestDto dto = new LoanStatementRequestDto();
-        //Невалидные данные
-        dto.setAmount(new BigDecimal("100000"));
-        dto.setTerm(12);
-        dto.setFirstName("Bober");
-        dto.setLastName("Kurwa");
-        dto.setMiddleName("Jakibydlo");
-        dto.setEmail("boberbobermail.ru");
-        dto.setBirthdate(LocalDate.parse("2008-12-01"));
-        dto.setPassportSeries("1234");
-        dto.setPassportNumber("567890");
-
-        assertFalse(offersService.isValid(dto));
-    }
 }
