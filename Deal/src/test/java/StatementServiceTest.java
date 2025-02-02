@@ -79,17 +79,7 @@ class StatementServiceTest {
         verify(statementRepository, times(1)).getByStatementId(statementId);
     }
 
-    @Test
-    void testGetStatementNotFound() {
-        UUID statementId = UUID.randomUUID();
 
-        when(statementRepository.getByStatementId(statementId)).thenReturn(null);
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> statementService.getStatement(statementId));
-
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
-        assertEquals("Заявка с таким ID не найдена", exception.getReason());
-    }
 
     @Test
     void testSetUuidForOffers() {

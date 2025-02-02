@@ -22,9 +22,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/deal/admin")
 public class AdminController {
-
     StatementService statementService;
-
     @Autowired
     AdminController(StatementService statementService){
         this.statementService = statementService;
