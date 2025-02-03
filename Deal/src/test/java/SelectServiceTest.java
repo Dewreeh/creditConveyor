@@ -1,9 +1,6 @@
 
 
 import org.deal.dto.LoanOfferDto;
-import org.deal.dto.StatementStatusHistoryDto;
-import org.deal.enums.ApplicationStatus;
-import org.deal.enums.ChangeType;
 import org.deal.model.Statement;
 import org.deal.repository.StatementRepository;
 import org.deal.service.SelectService;
@@ -12,12 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -4,7 +4,6 @@ import org.deal.dto.CreditDto;
 import org.deal.dto.FinishRegistrationRequestDto;
 import org.deal.dto.LoanOfferDto;
 import org.deal.dto.ScoringDataDto;
-import org.deal.enums.ApplicationStatus;
 import org.deal.enums.CreditStatus;
 import org.deal.enums.Gender;
 import org.deal.enums.MaritalStatus;
@@ -19,12 +18,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
