@@ -1,8 +1,7 @@
 
 
 import org.deal.dto.LoanOfferDto;
-import org.deal.dto.LoanStatementRequestDto;
-import org.deal.dto.StatementStatusHistoryDto;
+
 import org.deal.enums.ApplicationStatus;
 import org.deal.enums.ChangeType;
 import org.deal.model.Client;
@@ -15,11 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;

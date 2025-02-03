@@ -8,7 +8,6 @@ import org.credit_conveyor.dto.ScoringDataDto;
 import org.credit_conveyor.enums.EmploymentStatus;
 import org.credit_conveyor.enums.Gender;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

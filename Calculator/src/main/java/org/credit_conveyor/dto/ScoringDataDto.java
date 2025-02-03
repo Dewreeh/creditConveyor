@@ -2,7 +2,6 @@ package org.credit_conveyor.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.NonNull;
 import org.credit_conveyor.enums.Gender;
 import org.credit_conveyor.enums.MaritalStatus;
 
