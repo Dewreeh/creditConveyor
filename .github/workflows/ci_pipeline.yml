@@ -42,7 +42,7 @@ jobs:
     needs: build_and_test
     strategy:
       matrix:
-        service: [service1, service2, service3, service4, service5, service6]
+        service: [Calculator, Deal, Statement, Dossier, Gateway]
 
     steps:
       - name: Checkout Repository
