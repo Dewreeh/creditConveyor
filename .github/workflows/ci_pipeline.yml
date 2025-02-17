@@ -9,7 +9,7 @@ on:
     branches:
       - develop
       - main
-      -
+
 jobs:
   build_and_test:
     name: Build and test
@@ -42,7 +42,7 @@ jobs:
     needs: build_and_test
     strategy:
       matrix:
-        service: [Calculator, Deal, Statement, Dossier, Gateway]
+        service: [service1, service2, service3, service4, service5, service6]
 
     steps:
       - name: Checkout Repository
